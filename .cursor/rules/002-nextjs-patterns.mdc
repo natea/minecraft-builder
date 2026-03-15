@@ -1,0 +1,86 @@
+---
+description: Use when writing Next.js 16 App Router code
+globs: app/**/*.ts,app/**/*.tsx
+alwaysApply: false
+---
+
+# Next.js 16 App Router Patterns
+
+## Context
+- Next.js 16 with App Router
+- Server Components by default
+- Client Components when needed
+
+## Requirements
+
+### Route Parameters (CRITICAL)
+- Route params are async Promises - MUST await them
+- Type as `params: Promise<{ id: string }>`
+- Await before use: `const { id } = await params`
+
+### Server vs Client Components
+
+**Default to Server Components**:
+```typescript
+export default async function Page() {
+  const data = await fetchData();
+  return <Component data={data} />;
+}
+```
+
+**Use 'use client' when needed**:
+- useState, useEffect, useReducer
+- Event handlers (onClick, onChange)
+- Browser APIs
+
+### Page Patterns
+
+```typescript
+// app/items/[id]/page.tsx
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function ItemPage({ params }: PageProps) {
+  const { id } = await params;
+  const item = await fetchItem(id);
+  
+  if (!item) notFound();
+  return <ItemDetail item={item} />;
+}
+```
+
+## Examples
+
+<example>
+✅ Correct dynamic route:
+```typescript
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  return <div>{slug}</div>;
+}
+```
+</example>
+
+<example type="invalid">
+❌ Missing await (will error):
+```typescript
+export default function Page({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const { slug } = params; // ERROR
+  return <div>{slug}</div>;
+}
+```
+</example>
+
+<critical>
+- NEVER forget to await params in Next.js 16
+- ALWAYS type params as Promise
+</critical>

@@ -1,0 +1,83 @@
+---
+description: Use when creating or organizing React components
+globs: components/**/*.tsx,app/**/*.tsx
+alwaysApply: false
+---
+
+# Component Organization
+
+## Directory Structure
+
+```
+components/
+├── auth/           # Authentication components
+├── ui/             # Shared UI components
+├── forms/          # Form components
+└── [feature]/      # Feature-specific components
+
+app/
+├── [feature]/
+│   └── components/ # Page-specific components (if not reusable)
+```
+
+## Placement Rules
+
+- **Shared across pages** → `components/`
+- **Feature-specific, reusable** → `components/[feature]/`
+- **Page-specific only** → `app/[page]/components/`
+
+## Component Patterns
+
+### Client Components
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+
+interface Props {
+  initialValue: string;
+  onSubmit: (value: string) => void;
+}
+
+export function MyComponent({ initialValue, onSubmit }: Props) {
+  const [value, setValue] = useState(initialValue);
+  return (/* ... */);
+}
+```
+
+### Server Components
+
+```typescript
+interface Props {
+  id: string;
+}
+
+export async function ServerComponent({ id }: Props) {
+  const data = await fetchData(id);
+  return <div>{data.name}</div>;
+}
+```
+
+## Naming Conventions
+
+- **Files**: PascalCase (`MyComponent.tsx`)
+- **Exports**: Named exports preferred
+- **Props**: `{ComponentName}Props` interface
+- **Events**: `on{Event}` pattern
+
+## Import Patterns
+
+```typescript
+// ✅ Use path aliases
+import { Button } from '@/components/ui';
+import { useAuth } from '@/hooks/useAuth';
+
+// ❌ Avoid deep relative imports
+import { Button } from '../../../components/ui';
+```
+
+<critical>
+- ALWAYS use 'use client' for components with hooks or events
+- PREFER named exports over default exports
+</critical>

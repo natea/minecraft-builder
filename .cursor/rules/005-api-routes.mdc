@@ -1,0 +1,112 @@
+---
+description: Use when creating Next.js API routes
+globs: app/api/**/*.ts
+alwaysApply: false
+---
+
+# API Route Patterns
+
+## Context
+- Next.js 16 App Router API routes
+- All data operations go through data-api or other backend services
+- Zero Trust token exchange for each backend service
+
+## Requirements
+
+### Route Parameter Handling
+
+```typescript
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: RouteParams
+) {
+  const { id } = await params;
+  // ...
+}
+```
+
+### Data API Pattern
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuthWithTokenExchange } from '@/lib/auth-middleware';
+import { ensureDataDocuments, listItems } from '@/lib/data-api-client';
+
+export async function GET(request: NextRequest) {
+  const auth = await requireAuthWithTokenExchange(request, 'data-api');
+  if (auth instanceof NextResponse) return auth;
+
+  const documentIds = await ensureDataDocuments(auth.apiToken);
+  const result = await listItems(auth.apiToken, documentIds.items);
+  return NextResponse.json(result);
+}
+```
+
+### Backend Proxy Pattern
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuthWithTokenExchange } from '@/lib/auth-middleware';
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+
+export async function GET(request: NextRequest) {
+  const auth = await requireAuthWithTokenExchange(request, 'agent-api');
+  if (auth instanceof NextResponse) return auth;
+
+  const response = await fetch(`${BACKEND_URL}/items`, {
+    headers: {
+      'Authorization': `Bearer ${auth.apiToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return NextResponse.json(await response.json(), {
+    status: response.status,
+  });
+}
+```
+
+### Error Handling
+
+```typescript
+export async function GET(request: NextRequest) {
+  try {
+    // Route logic
+  } catch (error) {
+    console.error('[API] Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## Examples
+
+<example>
+✅ Correct data-api route:
+```typescript
+export async function POST(request: NextRequest) {
+  const auth = await requireAuthWithTokenExchange(request, 'data-api');
+  if (auth instanceof NextResponse) return auth;
+
+  const body = await request.json();
+  const documentIds = await ensureDataDocuments(auth.apiToken);
+  const item = await createItem(auth.apiToken, documentIds.items, body);
+  return NextResponse.json(item, { status: 201 });
+}
+```
+</example>
+
+<critical>
+- ALWAYS authenticate requests with requireAuthWithTokenExchange
+- ALWAYS await params before use
+- ALWAYS specify the correct audience ('data-api', 'agent-api', etc.)
+- NEVER access databases directly
+</critical>

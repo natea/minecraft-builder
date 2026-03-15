@@ -1,0 +1,19 @@
+{
+  "$schema": "https://busibox.io/schemas/app-manifest-v1.json",
+  "name": "Minecraft Builder",
+  "id": "minecraft-builder",
+  "version": "1.0.0",
+  "description": "Build structures in Minecraft through chat using AI and the GDMC HTTP Interface mod.",
+  "icon": "Blocks",
+  "defaultPath": "/minecraft",
+  "defaultPort": 3007,
+  "healthEndpoint": "/api/health",
+  "buildCommand": "npm run build",
+  "startCommand": "npm start",
+  "appMode": "frontend",
+  "requiredEnvVars": [],
+  "optionalEnvVars": [
+    "MINECRAFT_HTTP_URL"
+  ],
+  "busiboxAppVersion": "^3.0.0"
+}

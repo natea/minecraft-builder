@@ -1,0 +1,114 @@
+---
+description: Use when working with data storage operations via data-api
+globs: lib/data-api-client.ts,app/api/**/*.ts
+alwaysApply: false
+---
+
+# Data API Storage Patterns
+
+## Context
+- All data storage uses the Busibox data-api service
+- No direct database access (no Prisma, no SQL)
+- Uses @jazzmind/busibox-app client functions
+- Data is scoped per-user via token-based auth
+
+## Requirements
+
+### Data API Client
+
+```typescript
+// lib/data-api-client.ts
+import {
+  generateId,
+  getNow,
+  queryRecords,
+  insertRecords,
+  updateRecords,
+  deleteRecords,
+  ensureDocuments,
+} from '@jazzmind/busibox-app';
+import type { AppDataSchema } from '@jazzmind/busibox-app';
+```
+
+### Document Setup
+
+Each data collection requires a document with a schema:
+
+```typescript
+export const DOCUMENTS = {
+  ITEMS: 'my-app-items',
+} as const;
+
+export const itemSchema: AppDataSchema = {
+  fields: {
+    id: { type: 'string', required: true, hidden: true },
+    name: { type: 'string', required: true, label: 'Name', order: 1 },
+    // ... more fields
+    createdAt: { type: 'string', readonly: true, hidden: true },
+    updatedAt: { type: 'string', readonly: true, hidden: true },
+  },
+  displayName: 'Items',
+  itemLabel: 'Item',
+  sourceApp: 'my-app',
+  visibility: 'personal',
+  allowSharing: false,
+  graphNode: '',
+  graphRelationships: [],
+};
+```
+
+### Ensure Documents Before CRUD
+
+```typescript
+export async function ensureDataDocuments(token: string) {
+  return ensureDocuments(token, {
+    items: { name: DOCUMENTS.ITEMS, schema: itemSchema, visibility: 'personal' },
+  }, 'my-app');
+}
+```
+
+### CRUD Operations
+
+```typescript
+// List
+const result = await queryRecords<Item>(token, documentId, {
+  orderBy: [{ field: 'createdAt', direction: 'desc' }],
+  limit: 50,
+});
+
+// Get by ID
+const result = await queryRecords<Item>(token, documentId, {
+  where: { field: 'id', op: 'eq', value: itemId },
+  limit: 1,
+});
+
+// Create
+const item = { id: generateId(), ...input, createdAt: getNow(), updatedAt: getNow() };
+await insertRecords(token, documentId, [item]);
+
+// Update
+await updateRecords(token, documentId, updates, { field: 'id', op: 'eq', value: itemId });
+
+// Delete
+await deleteRecords(token, documentId, { field: 'id', op: 'eq', value: itemId });
+```
+
+### API Route Pattern
+
+```typescript
+export async function GET(request: NextRequest) {
+  const auth = await requireAuthWithTokenExchange(request, 'data-api');
+  if (auth instanceof NextResponse) return auth;
+
+  const documentIds = await ensureDataDocuments(auth.apiToken);
+  const result = await listItems(auth.apiToken, documentIds.items);
+  return NextResponse.json(result);
+}
+```
+
+<critical>
+- ALWAYS use requireAuthWithTokenExchange with 'data-api' audience
+- ALWAYS call ensureDataDocuments before CRUD operations
+- ALWAYS use generateId() and getNow() from @jazzmind/busibox-app
+- NEVER access databases directly - all storage goes through data-api
+</critical>

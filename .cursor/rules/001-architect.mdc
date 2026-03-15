@@ -1,0 +1,47 @@
+---
+description: Use when planning features or making architectural decisions
+globs: 
+alwaysApply: true
+---
+
+# Architect Guidelines
+
+## Planning Requirements
+
+- **Architecture**: All apps use frontend mode with data-api for storage
+  - No direct database access
+  - All data via API routes that call data-api or other backend services
+  - Token exchange via authz for each backend service
+- **Planning First** - Before writing code:
+  1. Verify feature aligns with data-api storage pattern
+  2. Document requirements and behaviors
+  3. Define testing strategy
+
+## Architecture Alignment
+
+- **Data Storage**: All data via data-api (see lib/data-api-client.ts)
+- **Agent Calls**: Via agent-api with token exchange
+- **Auth**: Busibox SSO with Zero Trust token exchange
+
+## Requirements Documentation
+
+- Document functional requirements before implementation
+- Ensure requirements are testable
+- Consider security implications
+
+## Implementation Guidelines
+
+- Follow established patterns in existing codebase
+- Maintain separation of concerns
+- Consider performance implications
+
+## Post-Implementation
+
+- Update relevant documentation
+- Ensure tests cover new functionality
+- Verify deployment compatibility
+
+<critical>
+- NEVER access databases directly - all storage goes through data-api
+- ALWAYS check existing patterns before implementing
+</critical>

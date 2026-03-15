@@ -1,0 +1,74 @@
+---
+description: Use ALWAYS when asked to CREATE A RULE or UPDATE A RULE or taught a lesson that should be retained
+alwaysApply: false
+---
+
+# Cursor Rules Format
+
+## Core Structure
+
+```mdc
+---
+description: ACTION when TRIGGER to OUTCOME
+globs: *.mdc
+---
+
+# Rule Title
+
+## Context
+- When to apply this rule
+- Prerequisites or conditions
+
+## Requirements
+- Concise, actionable items
+- Each requirement must be testable
+
+## Examples
+<example>
+Good concise example with explanation
+</example>
+
+<example type="invalid">
+Invalid concise example with explanation
+</example>
+```
+
+## File Organization
+
+### Location
+- Path: `.cursor/rules/`
+- Extension: `.mdc`
+
+### Naming Convention
+PREFIX-name.mdc where PREFIX is:
+- 0XX: Core standards
+- 1XX: Tool configs
+- 2XX: Database rules
+- 3XX: Testing standards
+- 4XX: Documentation
+- 5XX: API patterns
+- 6XX: Authentication
+
+## Required Fields
+
+### Frontmatter
+- description: ACTION TRIGGER OUTCOME format
+- globs: `glob pattern for files`
+
+### Body
+- context: Usage conditions
+- requirements: Actionable items
+- examples: Both valid and invalid
+
+## Formatting Guidelines
+
+- Use concise Markdown
+- XML tags limited to: `<example>`, `<danger>`, `<required>`, `<critical>`
+- Keep rules as short as possible
+- Keep examples minimal but clear
+
+<critical>
+- NEVER include verbose explanations
+- Keep file as short as possible
+- Frontmatter can ONLY have description and globs fields
+</critical>

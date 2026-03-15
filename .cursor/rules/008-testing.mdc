@@ -1,0 +1,105 @@
+---
+description: Use when writing or updating tests
+globs: **/*.test.ts,**/*.test.tsx,test/**/*
+alwaysApply: false
+---
+
+# Testing Standards
+
+## Context
+- Vitest for testing
+- React Testing Library for component tests
+- Focus on behavior over implementation
+
+## Requirements
+
+### Test Structure
+
+```typescript
+import { describe, it, expect, vi } from 'vitest';
+
+describe('ComponentName', () => {
+  it('should [expected behavior] when [condition]', () => {
+    // Arrange
+    const props = { value: 'test' };
+    
+    // Act
+    const result = render(<Component {...props} />);
+    
+    // Assert
+    expect(result).toMatchSnapshot();
+  });
+});
+```
+
+### Mocking
+
+```typescript
+// Mock modules
+vi.mock('@/lib/api', () => ({
+  fetchData: vi.fn().mockResolvedValue({ data: 'test' }),
+}));
+
+// Mock fetch
+global.fetch = vi.fn().mockResolvedValue({
+  ok: true,
+  json: () => Promise.resolve({ data: 'test' }),
+});
+```
+
+### API Route Tests
+
+```typescript
+import { GET } from './route';
+import { NextRequest } from 'next/server';
+
+describe('GET /api/items', () => {
+  it('should return items for authenticated user', async () => {
+    const request = new NextRequest('http://localhost/api/items');
+    const response = await GET(request);
+    const data = await response.json();
+    
+    expect(response.status).toBe(200);
+    expect(data).toHaveProperty('items');
+  });
+});
+```
+
+### Component Tests
+
+```typescript
+import { render, screen, fireEvent } from '@testing-library/react';
+import { MyComponent } from './MyComponent';
+
+describe('MyComponent', () => {
+  it('should handle click events', async () => {
+    const onSubmit = vi.fn();
+    render(<MyComponent onSubmit={onSubmit} />);
+    
+    fireEvent.click(screen.getByRole('button'));
+    
+    expect(onSubmit).toHaveBeenCalled();
+  });
+});
+```
+
+## Running Tests
+
+```bash
+npm test              # Run once
+npm run test:watch    # Watch mode
+npm run test:coverage # With coverage
+```
+
+## Coverage Thresholds
+
+- Branches: 80%
+- Functions: 80%
+- Lines: 80%
+- Statements: 80%
+
+<critical>
+- NEVER use mock data for integration tests unless explicitly requested
+- ALWAYS test both success and error paths
+- PREFER behavior tests over implementation tests
+</critical>

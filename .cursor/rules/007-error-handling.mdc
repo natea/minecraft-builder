@@ -1,0 +1,108 @@
+---
+description: Use when handling errors or fixing bugs
+globs: **/*.ts,**/*.tsx
+alwaysApply: false
+---
+
+# Error Handling Guidelines
+
+## Context
+- When fixing bugs or handling errors
+- When simplification might affect functionality
+
+## Requirements
+
+### Ask Before Simplifying
+
+- ALWAYS ask permission before removing functionality to fix errors
+- Prefer targeted fixes over simplification
+- Explain what would be lost with any simplification
+
+### Debug First
+
+```typescript
+// Add debug logging before making changes
+console.log('[Debug] Input:', input);
+console.log('[Debug] State:', state);
+
+// Then investigate the issue
+```
+
+### Error Responses in API Routes
+
+```typescript
+export async function GET(request: NextRequest) {
+  try {
+    // Route logic
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('[API] Error:', error);
+    
+    if (error instanceof AuthError) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### React Error Boundaries
+
+```typescript
+// app/error.tsx
+'use client';
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error;
+  reset: () => void;
+}) {
+  return (
+    <div>
+      <h2>Something went wrong</h2>
+      <button onClick={reset}>Try again</button>
+    </div>
+  );
+}
+```
+
+### Next.js 16 Type Errors
+
+- Route params must be typed as `Promise<{ id: string }>`
+- Params must be awaited: `const { id } = await params`
+- Ensure IDs are strings when using data-api
+
+## Examples
+
+<example>
+User: Fix the build error
+Assistant: Found a type error. The component uses fields that don't match the API types.
+
+Options:
+1. Fix types to match API (recommended)
+2. Add optional chaining for safety
+3. Simplify component (requires permission)
+
+Which approach would you prefer?
+</example>
+
+<example type="invalid">
+User: Fix the build error
+Assistant: Fixed by removing the problematic fields. Build works now.
+
+[Removed functionality without permission]
+</example>
+
+<critical>
+- NEVER remove functionality without explicit permission
+- ALWAYS explain what a fix will change
+</critical>

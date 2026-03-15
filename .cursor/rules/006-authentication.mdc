@@ -1,0 +1,95 @@
+---
+description: Use when implementing authentication or authorization
+globs: lib/auth*.ts,lib/sso.ts,app/api/auth/**/*.ts,app/api/sso/**/*.ts
+alwaysApply: false
+---
+
+# Busibox SSO Authentication
+
+## Context
+- Uses Busibox authz service for authentication
+- RS256 JWT tokens validated via JWKS
+- Zero Trust token exchange pattern
+
+## Token Flow
+
+```
+1. User clicks app in Busibox Portal
+2. Busibox Portal exchanges session JWT for app-scoped token via authz
+3. authz verifies user has app access via RBAC bindings
+4. authz issues RS256 token with app_id claim and user's roles
+5. App validates token via authz JWKS endpoint
+```
+
+## Requirements
+
+### Auth Middleware Usage
+
+```typescript
+import { requireAuthWithTokenExchange } from '@/lib/auth-middleware';
+
+export async function GET(request: NextRequest) {
+  const auth = await requireAuthWithTokenExchange(request);
+  if (auth instanceof NextResponse) return auth;
+
+  // auth.ssoToken - original session JWT
+  // auth.apiToken - exchanged API token for backend calls
+  // auth.isTestUser - true if using TEST_SESSION_JWT
+}
+```
+
+### Optional Auth
+
+```typescript
+import { optionalAuth } from '@/lib/auth-middleware';
+
+export async function GET(request: NextRequest) {
+  const auth = await optionalAuth(request);
+  
+  if (auth) {
+    // Authenticated request
+  } else {
+    // Anonymous request
+  }
+}
+```
+
+### SSO Validation
+
+```typescript
+import { validateSSOToken } from '@/lib/sso';
+
+const result = await validateSSOToken(token);
+if (result.valid) {
+  // result.userId, result.roles, result.scopes
+} else {
+  // result.error
+}
+```
+
+### Role Checking
+
+```typescript
+import { hasRole, isAdmin } from '@/lib/sso';
+
+if (isAdmin(session)) {
+  // Admin-only logic
+}
+
+if (hasRole(session, 'Editor')) {
+  // Editor logic
+}
+```
+
+## Environment Variables
+
+```bash
+AUTHZ_BASE_URL=http://authz:8010
+APP_NAME=My App  # Token audience
+```
+
+<critical>
+- NEVER expose tokens in client-side code
+- ALWAYS validate tokens server-side
+- NEVER skip authentication for data routes
+</critical>

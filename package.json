@@ -1,0 +1,42 @@
+{
+  "name": "minecraft-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build Minecraft structures through chat using AI and the GDMC HTTP Interface mod",
+  "scripts": {
+    "dev": "next dev -p 3007",
+    "build": "next build",
+    "start": "next start -p 3007",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "next lint",
+    "update:busibox-app": "./scripts/update-busibox-app.sh"
+  },
+  "dependencies": {
+    "@jazzmind/busibox-app": "^3.0.13",
+    "jose": "^6.1.2",
+    "lucide-react": "^0.469.0",
+    "next": "^16.0.10",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.19",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/coverage-v8": "^4.0.15",
+    "@vitest/ui": "^4.0.15",
+    "eslint": "^8",
+    "eslint-config-next": "^15",
+    "jsdom": "^25.0.1",
+    "tailwindcss": "^4",
+    "tsx": "^4.19.2",
+    "typescript": "^5"
+  }
+}
