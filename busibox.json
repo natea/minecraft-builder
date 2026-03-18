@@ -6,7 +6,7 @@
   "description": "Build structures in Minecraft through chat using AI and the GDMC HTTP Interface mod.",
   "icon": "Blocks",
   "defaultPath": "/minecraft",
-  "defaultPort": 3007,
+  "defaultPort": 3107,
   "healthEndpoint": "/api/health",
   "buildCommand": "npm run build",
   "startCommand": "npm start",

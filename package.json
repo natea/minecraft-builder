@@ -4,9 +4,9 @@
   "private": true,
   "description": "Build Minecraft structures through chat using AI and the GDMC HTTP Interface mod",
   "scripts": {
-    "dev": "next dev -p 3007",
+    "dev": "next dev -p 3107",
     "build": "next build",
-    "start": "next start -p 3007",
+    "start": "next start -p 3107",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
