@@ -24,7 +24,7 @@ import type { DemoNote, CreateNoteInput, UpdateNoteInput } from './types';
 // ==========================================================================
 
 export const DOCUMENTS = {
-  NOTES: 'busibox-template-notes',
+  NOTES: 'minecraft-builder-notes',
 } as const;
 
 // ==========================================================================
@@ -41,7 +41,7 @@ export const noteSchema: AppDataSchema = {
   },
   displayName: 'Notes',
   itemLabel: 'Note',
-  sourceApp: 'busibox-template',
+  sourceApp: 'minecraft-builder',
   visibility: 'personal',
   allowSharing: false,
   graphNode: '',
@@ -64,7 +64,7 @@ export async function ensureDataDocuments(token: string): Promise<{
         visibility: 'personal',
       },
     },
-    'busibox-template'
+    'minecraft-builder'
   );
   return ids as { notes: string };
 }
