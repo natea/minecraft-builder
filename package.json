@@ -9,11 +9,14 @@
     "start": "next start -p 3007",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "next lint",
-    "update:busibox-app": "./scripts/update-busibox-app.sh"
+    "update:busibox-app": "./scripts/update-busibox-app.sh",
+    "link:busibox": "./scripts/link-local-busibox.sh",
+    "unlink:busibox": "./scripts/unlink-local-busibox.sh"
   },
   "dependencies": {
-    "@jazzmind/busibox-app": "^3.0.13",
+    "@jazzmind/busibox-app": "^3.0.23",
     "jose": "^6.1.2",
     "lucide-react": "^0.469.0",
     "next": "^16.0.10",

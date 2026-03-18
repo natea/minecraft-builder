@@ -16,12 +16,12 @@ const verbose = process.env.VERBOSE_AUTH_LOGGING === 'true';
 
 const handleGet = createSSOGetHandler(NextResponse, { 
   verbose,
-  defaultAppName: 'busibox-template',
+  defaultAppName: 'minecraft-builder',
 });
 
 const handlePost = createSSOPostHandler(NextResponse, { 
   verbose,
-  defaultAppName: 'busibox-template',
+  defaultAppName: 'minecraft-builder',
 });
 
 export async function GET(request: NextRequest) {

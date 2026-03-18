@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "My App",
-  description: "Built with Busibox App Template",
+  title: "Minecraft Builder",
+  description: "Build Minecraft structures through chat using AI and the GDMC HTTP Interface mod",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const portalUrl = process.env.NEXT_PUBLIC_BUSIBOX_PORTAL_URL || process.env.NEXT_PUBLIC_AI_PORTAL_URL || '';
-  const appId = process.env.APP_NAME || 'busibox-template';
+  const appId = process.env.APP_NAME || 'minecraft-builder';
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
   const portalBasePath = process.env.NEXT_PUBLIC_PORTAL_BASE_PATH || '/portal';
 
